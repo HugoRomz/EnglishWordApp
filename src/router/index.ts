@@ -18,9 +18,19 @@ const router = createRouter({
           name: 'about',
           component: () => import('@/views/AboutView.vue'),
         },
+        // NOT FOUND
+        {
+          path: '/:pathMatch(.*)*',
+          name: 'not-found',
+          component: () => import('@/views/NotFoundView.vue'),
+        },
       ],
     },
   ],
+})
+
+router.afterEach(async (to, from, failure) => {
+  if (!failure) setTimeout(() => window.HSStaticMethods.autoInit(), 100)
 })
 
 export default router

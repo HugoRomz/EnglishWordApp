@@ -1,5 +1,7 @@
 import './assets/main.css'
 
+import('preline/dist/index.js')
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

@@ -1,11 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AppNavbar from './AppNavbar.vue'
+import AppTopbar from './AppTopbar.vue'
+</script>
 
 <template>
   <div class="min-h-screen">
-    <main class="w-full lg:ps-64">
-      <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
-        <router-view />
-      </div>
+    <app-topbar />
+    <app-navbar />
+
+    <main class="max-w-[85rem] w-full mx-auto px-3 py-3 lg:py-6 lg:px-0">
+      <router-view />
     </main>
   </div>
 </template>
