@@ -7,7 +7,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/vue'
   <!-- ========== HEADER ========== -->
   <header class="relative flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white text-sm">
     <nav
-      class="max-w-[85rem] w-full mx-auto py-3 sm:flex sm:items-center sm:justify-between border-b-1 border-gray-200"
+      class="max-w-[85rem] w-full mx-auto py-3 sm:flex sm:items-center sm:justify-between border-b-1 border-gray-200 px-3 md:px-0"
     >
       <div class="w-full flex items-center ms-auto justify-between gap-x-1 md:gap-x-3">
         <div class="flex">
@@ -36,7 +36,12 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/vue'
             />
           </SignedOut>
           <SignedIn>
-            <UserButton showName />
+            <div class="sm:hidden">
+              <UserButton />
+            </div>
+            <div class="hidden sm:block">
+              <UserButton showName />
+            </div>
           </SignedIn>
         </div>
       </div>
