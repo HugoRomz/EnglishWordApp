@@ -19,7 +19,11 @@ if (!PUBLISHABLE_KEY) {
 
 const app = createApp(App)
 
-app.use(clerkPlugin, { publishableKey: PUBLISHABLE_KEY, localization: esMX })
+app.use(clerkPlugin, {
+  publishableKey: PUBLISHABLE_KEY,
+  localization: esMX,
+  signInForceRedirectUrl: import.meta.env.VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL,
+})
 
 app.use(createPinia())
 app.use(router)
