@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import { X, Info } from 'lucide-vue-next'
+
+const props = defineProps({
+  mesagge: {
+    type: String,
+    default: 'This is an informational message.',
+  },
+})
+
 const showBanner = ref(true)
 
 function closeBanner() {
@@ -11,17 +20,17 @@ function closeBanner() {
 <template>
   <div
     v-if="showBanner"
-    class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 cursor-pointer"
-    role="alert"
+    class="bg-blue-50 text-blue-800 px-4 py-3 cursor-pointer"
+    @click="closeBanner"
   >
-    <p class="font-bold">Informational message</p>
-    <p class="text-sm">Some additional text to explain said message.</p>
-    <button
-      @click="closeBanner"
-      class="absolute top-0 right-0 mt-4 mr-4 text-blue-500 hover:text-blue-700 focus:outline-none"
-      aria-label="Close"
-    >
-      Exite
-    </button>
+    <div class="max-w-[85rem] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="flex sm:items-center gap-2 text-sm text-left">
+        <Info class="size-5 shrink-0 text-blue-800" />
+        {{ props.mesagge }}
+      </p>
+      <div class="flex items-center gap-4">
+        <X class="size-5 text-blue-800 hover:text-blue-700 focus:outline-none" aria-label="Close" />
+      </div>
+    </div>
   </div>
 </template>

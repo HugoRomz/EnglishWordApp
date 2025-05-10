@@ -5,7 +5,7 @@ import { SignInButton } from '@clerk/vue'
 <template>
   <div class="absolute top-0 -z-10 h-full w-full bg-white">
     <div
-      class="absolute bottom-auto left-auto right-0 top-0 h-[500px] w-[500px] translate-x-[10%] translate-y-[50%] md:-translate-x-[35%] md:translate-y-[100%] lg:-translate-x-[30%] lg:translate-y-[20%] rounded-full bg-[#16a08483] opacity-50 blur-[80px]"
+      class="absolute bottom-auto left-auto right-0 top-0 h-[500px] w-[500px] translate-x-[10%] translate-y-[50%] md:-translate-x-[35%] md:translate-y-[100%] lg:-translate-x-[30%] lg:translate-y-[20%] rounded-full bg-[#16a08483] opacity-50 blur-[80px] -z-10"
     ></div>
 
     <div
