@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import WordCard from './WordCard.vue'
 
-const props = defineProps({
-  vocabularies: {
-    type: Array,
-    required: true,
-  },
-})
+interface Vocabulary {
+  id: string
+  word: string
+  meaning: string
+  example: string
+}
+
+const props = defineProps<{
+  vocabularies: Vocabulary[]
+}>()
 </script>
 
 <template>
@@ -17,7 +21,7 @@ const props = defineProps({
     >
       <WordCard
         v-for="vocabulary in props.vocabularies"
-        :key="vocabulary.id || index"
+        :key="vocabulary.id"
         :word="vocabulary.word"
         :translate="vocabulary.meaning"
         :example="vocabulary.example"
