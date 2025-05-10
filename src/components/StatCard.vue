@@ -7,8 +7,8 @@ const props = defineProps({
     default: 'Total users',
   },
   value: {
-    type: String,
-    default: '72,540',
+    type: Number,
+    default: 0,
   },
   icon: {
     type: [Object, Function],
