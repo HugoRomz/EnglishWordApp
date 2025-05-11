@@ -4,15 +4,27 @@ import WordsGrid from '@/components/WordsGrid.vue'
 import { useUser } from '@clerk/vue'
 
 import { useVocabulariesStore } from '@/stores/vocabularies'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const vocabStore = useVocabulariesStore()
+const loading = ref(false)
+const noMore = ref(false)
+const LIMIT = 6
 
 const { isSignedIn, user, isLoaded } = useUser()
 
-onMounted(() => {
-  // carga inicial de 6 registros
-  vocabStore.fetchVocabularies(6)
+onMounted(async () => {
+  vocabStore.toggleAddModal(false)
+  try {
+    loading.value = true
+    await vocabStore.fetchVocabularies(LIMIT)
+    noMore.value = vocabStore.vocabularies.length >= vocabStore.dataStats.totalWords
+  } catch (error) {
+    console.error('Error fetching vocabularies:', error)
+    loading.value = false
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
@@ -38,6 +50,6 @@ onMounted(() => {
       </router-link>
     </div>
 
-    <WordsGrid :vocabularies="vocabStore.vocabularies" />
+    <WordsGrid :loading="loading" :LIMIT="LIMIT" :vocabularies="vocabStore.vocabularies" />
   </main>
 </template>

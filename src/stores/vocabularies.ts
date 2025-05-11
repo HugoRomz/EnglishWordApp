@@ -51,6 +51,22 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     }
   }
 
+  async function fetchMoreVocabularies(offset = 0, limit = 6) {
+    if (!isLoaded || !user.value) return
+
+    const { data, error: err } = await supabase
+      .from('vocabularies')
+      .select('*')
+      .range(offset, offset + limit - 1)
+      .eq('clerk_user_id', user.value.id)
+
+    if (err) {
+      error.value = err
+    } else {
+      vocabularies.value = [...vocabularies.value, ...(data || [])]
+    }
+  }
+
   function toggleAddModal(state: boolean) {
     openAddModal.value = state
   }
@@ -61,6 +77,7 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     dataStats,
     openAddModal,
     fetchVocabularies,
+    fetchMoreVocabularies,
     toggleAddModal,
   }
 })
