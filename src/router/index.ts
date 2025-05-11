@@ -14,22 +14,24 @@ const router = createRouter({
     {
       path: '/app',
       component: AppLayout,
+      meta: {
+        requiresAuth: true,
+      },
       children: [
         {
           path: '/dashboard',
           name: 'dashboard',
           component: () => import('@/views/DashboardView.vue'),
-          meta: {
-            requiresAuth: true,
-          },
         },
         {
           path: '/about',
           name: 'about',
           component: () => import('@/views/AboutView.vue'),
-          meta: {
-            requiresAuth: true,
-          },
+        },
+        {
+          path: '/my-words',
+          name: 'my-words',
+          component: () => import('@/views/MyWordsView.vue'),
         },
         // NOT FOUND
         {
