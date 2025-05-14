@@ -5,6 +5,7 @@ import { useUser } from '@clerk/vue'
 
 import { useVocabulariesStore } from '@/stores/vocabularies'
 import { onMounted, ref } from 'vue'
+import { Plus } from 'lucide-vue-next'
 
 const vocabStore = useVocabulariesStore()
 const loading = ref(false)
@@ -14,7 +15,6 @@ const LIMIT = 6
 const { isSignedIn, user, isLoaded } = useUser()
 
 onMounted(async () => {
-  vocabStore.toggleAddModal(false)
   try {
     loading.value = true
     await vocabStore.fetchVocabularies(LIMIT)
@@ -51,5 +51,13 @@ onMounted(async () => {
     </div>
 
     <WordsGrid :loading="loading" :LIMIT="LIMIT" :vocabularies="vocabStore.vocabularies" />
+    <button
+      type="button"
+      class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900 focus:outline-hidden focus:bg-gray-900 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+      @click="vocabStore.openAddModal()"
+    >
+      <Plus />
+      New word
+    </button>
   </main>
 </template>

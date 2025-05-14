@@ -10,11 +10,13 @@ import type { Database } from '@/types/database.types'
 
 type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
 
+declare const HSOverlay: any
+
 export const useVocabulariesStore = defineStore('vocabularies', () => {
   const vocabularies = ref<Vocabulary[]>([])
   const error = ref<PostgrestError | null>(null)
   const dataStats = ref({ totalWords: 0, newWords: 0 })
-  const openAddModal = ref(false)
+  const isAddModalOpen = ref(false)
 
   const { isLoaded, user } = useUser()
 
@@ -70,18 +72,30 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     }
   }
 
-  function toggleAddModal(state: boolean) {
-    openAddModal.value = state
+  function openAddModal() {
+    isAddModalOpen.value = true
+    const modalEl = document.getElementById('hs-basic-modal')
+    if (modalEl && typeof HSOverlay !== 'undefined') {
+      HSOverlay.open(modalEl)
+    }
+  }
+  function closeAddModal() {
+    isAddModalOpen.value = false
+    const modalEl = document.getElementById('hs-basic-modal')
+    if (modalEl && typeof HSOverlay !== 'undefined') {
+      HSOverlay.close(modalEl)
+    }
   }
 
   return {
     vocabularies,
     error,
     dataStats,
+    isAddModalOpen,
     openAddModal,
+    closeAddModal,
     fetchVocabularies,
     fetchMoreVocabularies,
-    toggleAddModal,
     addVocabulary,
   }
 })
