@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import WordCard from './WordCard.vue'
 import SkeletonCard from './SkeletonCard.vue'
+import type { Database } from '@/types/database.types'
 
 type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
 
@@ -24,9 +25,9 @@ const props = defineProps<{
       <WordCard
         v-for="vocabulary in props.vocabularies"
         :key="vocabulary.id"
-        :word="vocabulary.word"
-        :translate="vocabulary.meaning"
-        :example="vocabulary.example"
+        :word="vocabulary.word || ''"
+        :translate="vocabulary.meaning || ''"
+        :example="vocabulary.example || ''"
       />
     </div>
 
