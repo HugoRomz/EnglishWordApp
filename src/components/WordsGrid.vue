@@ -2,12 +2,7 @@
 import WordCard from './WordCard.vue'
 import SkeletonCard from './SkeletonCard.vue'
 
-interface Vocabulary {
-  id: string
-  word: string
-  meaning: string
-  example: string
-}
+type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
 
 const props = defineProps<{
   vocabularies: Vocabulary[]

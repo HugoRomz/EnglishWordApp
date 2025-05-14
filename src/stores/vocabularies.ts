@@ -1,18 +1,14 @@
 // src/stores/vocabularies.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { supabase } from '@/lib/supabaseClient'
-import { useUser } from '@clerk/vue'
-import type { UUID } from 'crypto'
-import type { PostgrestError } from '@supabase/supabase-js'
 
-interface Vocabulary {
-  id: UUID
-  word: string
-  meaning: string
-  example: string
-  created_at: string
-}
+import { useUser } from '@clerk/vue'
+
+import type { PostgrestError } from '@supabase/supabase-js'
+import { vocabulariesService } from '@/services/vocabulariesService'
+import type { Database } from '@/types/database.types'
+
+type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
 
 export const useVocabulariesStore = defineStore('vocabularies', () => {
   const vocabularies = ref<Vocabulary[]>([])
@@ -25,25 +21,21 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
   async function fetchVocabularies(limit = 6) {
     if (!isLoaded || !user.value) return
 
-    const {
-      data,
-      error: err,
-      count,
-    } = await supabase
-      .from('vocabularies')
-      .select('*', { count: 'exact' })
-      .limit(limit)
-      .eq('clerk_user_id', user.value.id)
+    const { data, error: err, count } = await vocabulariesService.list(user.value.id, limit)
 
     if (err) {
       error.value = err
+      console.log(err)
     } else {
       vocabularies.value = data || []
+
       const now = Date.now()
-      const newWordsCount = vocabularies.value.filter((v) => {
-        const created = new Date(v.created_at).getTime()
-        return (now - created) / (1000 * 3600 * 24) <= 2
+
+      const newWordsCount = data?.filter((word) => {
+        const createdAt = new Date(word.created_at).getTime()
+        return now - createdAt < 1000 * 60 * 60 * 24 * 7 // 7 days
       }).length
+
       dataStats.value = {
         totalWords: count || 0,
         newWords: newWordsCount,
@@ -54,16 +46,27 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
   async function fetchMoreVocabularies(offset = 0, limit = 6) {
     if (!isLoaded || !user.value) return
 
-    const { data, error: err } = await supabase
-      .from('vocabularies')
-      .select('*')
-      .range(offset, offset + limit - 1)
-      .eq('clerk_user_id', user.value.id)
+    const { data, error: err } = await vocabulariesService.list(user.value.id, limit, offset)
 
     if (err) {
       error.value = err
     } else {
       vocabularies.value = [...vocabularies.value, ...(data || [])]
+    }
+  }
+
+  const addVocabulary = async (newWord: Omit<Vocabulary, 'id' | 'created_at'>) => {
+    if (!isLoaded || !user.value) return
+
+    const { data, error: insertError } = await vocabulariesService.create({
+      ...newWord,
+      clerk_user_id: user.value.id,
+    })
+
+    if (insertError) {
+      error.value = insertError
+    } else if (data) {
+      vocabularies.value.unshift(data)
     }
   }
 
@@ -79,5 +82,6 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     fetchVocabularies,
     fetchMoreVocabularies,
     toggleAddModal,
+    addVocabulary,
   }
 })
