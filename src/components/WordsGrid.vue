@@ -26,7 +26,7 @@ const props = defineProps<{
         v-for="vocabulary in props.vocabularies"
         :key="vocabulary.id"
         :word="vocabulary.word || ''"
-        :translate="vocabulary.meaning || ''"
+        :translate="vocabulary.translate || ''"
         :example="vocabulary.example || ''"
       />
     </div>
