@@ -27,7 +27,7 @@ const props = defineProps({
 
       <div class="grow">
         <div class="flex items-center gap-x-2">
-          <p class="text-xs uppercase text-[#16a085]">{{ props.title }}</p>
+          <p class="text-xs uppercase text-primaryColor">{{ props.title }}</p>
         </div>
         <div class="mt-1 flex items-center gap-x-2">
           <h3 class="text-xl sm:text-2xl font-medium text-gray-800">{{ props.value }}</h3>

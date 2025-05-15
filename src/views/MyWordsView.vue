@@ -90,7 +90,7 @@ async function loadMore() {
     <button
       @click="loadMore"
       :disabled="loading || noMore"
-      class="py-3 px-4 inline-flex items-center border border-gray-200 gap-x-2 text-sm font-medium rounded-lg text-[#16a085] hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none cursor-pointer hover:font-bold"
+      class="py-3 px-4 inline-flex items-center border border-gray-200 gap-x-2 text-sm font-medium rounded-lg text-primaryColor hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none cursor-pointer hover:font-bold"
     >
       {{ loading ? 'Loading...' : noMore ? 'Nothing more to load' : 'Load More' }}
     </button>

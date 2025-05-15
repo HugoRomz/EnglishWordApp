@@ -9,8 +9,13 @@ import { vocabulariesService } from '@/services/vocabulariesService'
 import type { Database } from '@/types/database.types'
 
 type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
+type VocabularyInsert = Database['public']['Tables']['vocabularies']['Insert']
 
-declare const HSOverlay: any
+interface HSOverlayType {
+  open(modalEl: HTMLElement): void
+  close(modalEl: HTMLElement): void
+}
+declare const HSOverlay: HSOverlayType
 
 export const useVocabulariesStore = defineStore('vocabularies', () => {
   const vocabularies = ref<Vocabulary[]>([])
@@ -57,18 +62,27 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     }
   }
 
-  const addVocabulary = async (newWord: Omit<Vocabulary, 'id' | 'created_at'>) => {
+  async function addVocabulary(
+    newWord: Omit<VocabularyInsert, 'id' | 'created_at' | 'clerk_user_id'>,
+  ) {
     if (!isLoaded || !user.value) return
 
-    const { data, error: insertError } = await vocabulariesService.create({
-      ...newWord,
+    const payload: VocabularyInsert = {
       clerk_user_id: user.value.id,
-    })
+      word: newWord.word ?? null,
+      translate: newWord.translate ?? null,
+      example: newWord.example ?? null,
+      pronunciation: newWord.pronunciation ?? null,
+      type: newWord.type ?? null,
+    }
 
+    const { data, error: insertError } = await vocabulariesService.create(payload)
     if (insertError) {
       error.value = insertError
     } else if (data) {
       vocabularies.value.unshift(data)
+      // (Opcional) actualizar dataStats.totalWords++
+      dataStats.value.totalWords++
     }
   }
 

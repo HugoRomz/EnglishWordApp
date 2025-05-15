@@ -15,7 +15,9 @@ export type Database = {
           created_at: string
           example: string | null
           id: string
-          meaning: string | null
+          pronunciation: string | null
+          translate: string | null
+          type: string | null
           word: string | null
         }
         Insert: {
@@ -23,7 +25,9 @@ export type Database = {
           created_at?: string
           example?: string | null
           id?: string
-          meaning?: string | null
+          pronunciation?: string | null
+          translate?: string | null
+          type?: string | null
           word?: string | null
         }
         Update: {
@@ -31,7 +35,9 @@ export type Database = {
           created_at?: string
           example?: string | null
           id?: string
-          meaning?: string | null
+          pronunciation?: string | null
+          translate?: string | null
+          type?: string | null
           word?: string | null
         }
         Relationships: []

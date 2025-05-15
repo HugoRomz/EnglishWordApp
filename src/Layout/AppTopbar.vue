@@ -32,7 +32,7 @@ const isActive = (path: string) => route.path === path
           href="#"
           aria-label="Brand"
         >
-          <BookOpenText class="text-[#16a085]" />
+          <BookOpenText class="text-primaryColor" />
           Lexarium
         </router-link>
 
@@ -77,7 +77,7 @@ const isActive = (path: string) => route.path === path
               class="p-2 flex items-center text-sm"
               :class="
                 isActive(link.path)
-                  ? 'text-[#16a085] font-semibold'
+                  ? 'text-primaryColor font-semibold'
                   : 'text-gray-900 hover:text-gray-500 '
               "
             >

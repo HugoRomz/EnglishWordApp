@@ -10,6 +10,8 @@
 @theme {
   --font-title: 'Material Symbols Rounded Variable', 'sans-serif';
   --font-base: 'Inter Variable', 'sans-serif';
+
+  --color-primaryColor: #16a085;
 }
 
 body {
