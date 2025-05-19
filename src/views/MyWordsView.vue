@@ -33,7 +33,7 @@ async function loadMore() {
   if (loading.value || noMore.value) return
   loading.value = true
   try {
-    await vocabStore.fetchMoreVocabularies(offset, LIMIT)
+    await vocabStore.fetchVocabularies(LIMIT, offset)
     noMore.value = vocabStore.vocabularies.length >= vocabStore.dataStats.totalWords
   } catch (error) {
     console.error('Error fetching more vocabularies:', error)

@@ -1,9 +1,7 @@
 // src/stores/vocabularies.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
 import { useUser } from '@clerk/vue'
-
 import type { PostgrestError } from '@supabase/supabase-js'
 import { vocabulariesService } from '@/services/vocabulariesService'
 import type { Database } from '@/types/database.types'
@@ -20,45 +18,48 @@ declare const HSOverlay: HSOverlayType
 export const useVocabulariesStore = defineStore('vocabularies', () => {
   const vocabularies = ref<Vocabulary[]>([])
   const error = ref<PostgrestError | null>(null)
+  const loading = ref(false)
   const dataStats = ref({ totalWords: 0, newWords: 0 })
   const isAddModalOpen = ref(false)
 
   const { isLoaded, user } = useUser()
 
-  async function fetchVocabularies(limit = 6) {
+  async function fetchVocabularies(limit = 6, offset = 0) {
     if (!isLoaded || !user.value) return
 
-    const { data, error: err, count } = await vocabulariesService.list(user.value.id, limit)
+    loading.value = true
+    error.value = null
 
-    if (err) {
-      error.value = err
-      console.log(err)
-    } else {
-      vocabularies.value = data || []
+    try {
+      const {
+        data,
+        error: err,
+        count,
+      } = await vocabulariesService.list(user.value.id, limit, offset)
 
-      const now = Date.now()
+      if (err) {
+        error.value = err
+        console.error('Error fetching vocabularies:', err)
+      } else {
+        vocabularies.value = offset === 0 ? data || [] : [...vocabularies.value, ...(data || [])]
 
-      const newWordsCount = data?.filter((word) => {
-        const createdAt = new Date(word.created_at).getTime()
-        return now - createdAt < 1000 * 60 * 60 * 24 * 7 // 7 days
-      }).length
+        const now = Date.now()
 
-      dataStats.value = {
-        totalWords: count || 0,
-        newWords: newWordsCount,
+        const newWordsCount =
+          data?.filter((word) => {
+            const createdAt = new Date(word.created_at).getTime()
+            return now - createdAt < 1000 * 60 * 60 * 24 * 7 // 7 days
+          }).length || 0
+
+        dataStats.value = {
+          totalWords: count || 0,
+          newWords: newWordsCount,
+        }
       }
-    }
-  }
-
-  async function fetchMoreVocabularies(offset = 0, limit = 6) {
-    if (!isLoaded || !user.value) return
-
-    const { data, error: err } = await vocabulariesService.list(user.value.id, limit, offset)
-
-    if (err) {
-      error.value = err
-    } else {
-      vocabularies.value = [...vocabularies.value, ...(data || [])]
+    } catch (e) {
+      console.error('Unexpected error:', e)
+    } finally {
+      loading.value = false
     }
   }
 
@@ -67,22 +68,33 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
   ) {
     if (!isLoaded || !user.value) return
 
-    const payload: VocabularyInsert = {
-      clerk_user_id: user.value.id,
-      word: newWord.word ?? null,
-      translate: newWord.translate ?? null,
-      example: newWord.example ?? null,
-      pronunciation: newWord.pronunciation ?? null,
-      type: newWord.type ?? null,
-    }
+    loading.value = true
+    error.value = null
 
-    const { data, error: insertError } = await vocabulariesService.create(payload)
-    if (insertError) {
-      error.value = insertError
-    } else if (data) {
-      vocabularies.value.unshift(data)
-      // (Opcional) actualizar dataStats.totalWords++
-      dataStats.value.totalWords++
+    try {
+      const payload: Omit<VocabularyInsert, 'id' | 'created_at'> = {
+        clerk_user_id: user.value.id,
+        word: newWord.word ?? null,
+        translate: newWord.translate ?? null,
+        example: newWord.example ?? null,
+        pronunciation: newWord.pronunciation ?? null,
+        type: newWord.type ?? null,
+      }
+
+      const { error: insertError } = await vocabulariesService.create(payload)
+
+      if (insertError) {
+        error.value = insertError
+        console.error('Error adding vocabulary:', insertError)
+      } else {
+        // Refetch vocabularies to ensure we have the latest data
+        await fetchVocabularies()
+        closeAddModal()
+      }
+    } catch (e) {
+      console.error('Unexpected error:', e)
+    } finally {
+      loading.value = false
     }
   }
 
@@ -93,6 +105,7 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
       HSOverlay.open(modalEl)
     }
   }
+
   function closeAddModal() {
     isAddModalOpen.value = false
     const modalEl = document.getElementById('hs-basic-modal')
@@ -104,12 +117,12 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
   return {
     vocabularies,
     error,
+    loading,
     dataStats,
     isAddModalOpen,
     openAddModal,
     closeAddModal,
     fetchVocabularies,
-    fetchMoreVocabularies,
     addVocabulary,
   }
 })
