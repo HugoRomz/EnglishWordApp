@@ -1,7 +1,7 @@
 // src/stores/vocabularies.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useUser } from '@clerk/vue'
+import { useUser, useAuth } from '@clerk/vue'
 import type { PostgrestError } from '@supabase/supabase-js'
 import { vocabulariesService } from '@/services/vocabulariesService'
 import type { Database } from '@/types/database.types'
@@ -23,6 +23,7 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
   const isAddModalOpen = ref(false)
 
   const { isLoaded, user } = useUser()
+  const { getToken } = useAuth()
 
   async function fetchVocabularies(limit = 6, offset = 0) {
     if (!isLoaded || !user.value) return
@@ -31,11 +32,17 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     error.value = null
 
     try {
+      const token = await getToken.value({ template: 'supabase' })
+      if (!token) {
+        console.error('No token available')
+        return
+      }
+
       const {
         data,
         error: err,
         count,
-      } = await vocabulariesService.list(user.value.id, limit, offset)
+      } = await vocabulariesService.list(user.value.id, limit, offset, token)
 
       if (err) {
         error.value = err
@@ -71,8 +78,14 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
     loading.value = true
     error.value = null
 
+    const token = await getToken.value({ template: 'supabase' })
+    if (!token) {
+      console.error('No token available')
+      return
+    }
+
     try {
-      const payload: Omit<VocabularyInsert, 'id' | 'created_at'> = {
+      const payload = {
         clerk_user_id: user.value.id,
         word: newWord.word ?? null,
         translate: newWord.translate ?? null,
@@ -81,7 +94,7 @@ export const useVocabulariesStore = defineStore('vocabularies', () => {
         type: newWord.type ?? null,
       }
 
-      const { error: insertError } = await vocabulariesService.create(payload)
+      const { error: insertError } = await vocabulariesService.create(payload, token)
 
       if (insertError) {
         error.value = insertError

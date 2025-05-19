@@ -7,8 +7,8 @@ type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
 type VocabularyInsert = Database['public']['Tables']['vocabularies']['Insert']
 
 export const vocabulariesService = {
-  list: async (userId: string, limit = 6, offset = 0) => {
-    const supabase = await getSupabase()
+  list: async (userId: string, limit = 6, offset = 0, token?: string) => {
+    const supabase = await getSupabase(token)
     return await supabase
       .from('vocabularies')
       .select('*', { count: 'exact' })
@@ -26,8 +26,8 @@ export const vocabulariesService = {
       .single()
   },
 
-  create: async (data: Omit<VocabularyInsert, 'id' | 'created_at'>) => {
-    const supabase = await getSupabase()
+  create: async (data: Omit<VocabularyInsert, 'id' | 'created_at'>, token?: string) => {
+    const supabase = await getSupabase(token)
     return await supabase.from('vocabularies').insert(data)
   },
 
