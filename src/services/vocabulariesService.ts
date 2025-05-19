@@ -12,6 +12,7 @@ export const vocabulariesService = {
     return await supabase
       .from('vocabularies')
       .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
       .eq('clerk_user_id', userId)
       .range(offset, offset + limit - 1)
   },
