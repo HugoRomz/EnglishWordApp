@@ -7,11 +7,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 let client: ReturnType<typeof createClient<Database>> | null = null
 let currentToken: string | undefined
 
-/**
- * Devuelve un cliente de Supabase, reutilizando el existente si el token no ha cambiado.
- * @param token - Token JWT para autenticación, opcional.
- */
-export const getSupabase = (token?: string) => {
+export const getSupabase = async (token?: string) => {
   // Solo recrear el cliente si el token cambia o si es la primera llamada
   if (!client || token !== currentToken) {
     currentToken = token

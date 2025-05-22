@@ -11,34 +11,43 @@ export type Database = {
     Tables: {
       vocabularies: {
         Row: {
-          clerk_user_id: string | null
+          clerk_user_id: string
           created_at: string
+          difficulty: number | null
           example: string | null
           id: string
+          ipa_pronunciation: string | null
           pronunciation: string | null
+          status: string | null
           translate: string | null
           type: string | null
-          word: string | null
+          word: string
         }
         Insert: {
-          clerk_user_id?: string | null
+          clerk_user_id?: string
           created_at?: string
+          difficulty?: number | null
           example?: string | null
           id?: string
+          ipa_pronunciation?: string | null
           pronunciation?: string | null
+          status?: string | null
           translate?: string | null
           type?: string | null
-          word?: string | null
+          word: string
         }
         Update: {
-          clerk_user_id?: string | null
+          clerk_user_id?: string
           created_at?: string
+          difficulty?: number | null
           example?: string | null
           id?: string
+          ipa_pronunciation?: string | null
           pronunciation?: string | null
+          status?: string | null
           translate?: string | null
           type?: string | null
-          word?: string | null
+          word?: string
         }
         Relationships: []
       }
@@ -47,7 +56,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_vocabulary_stats: {
+        Args: { user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

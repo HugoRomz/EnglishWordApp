@@ -22,10 +22,10 @@ const isActive = (path: string) => route.path === path
     class="bg-white border-b border-gray-200 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full"
   >
     <nav
-      class="relative max-w-[85rem] w-full md:flex md:items-center md:justify-between md:gap-3 mx-auto px-4 sm:px-6 lg:px-8 py-3"
+      class="relative max-w-[70rem] 2xl:max-w-[85rem] w-full md:flex md:items-center md:justify-between mx-auto px-4 sm:px-6 lg:px-0 py-3"
     >
       <!-- Logo w/ Collapse Button -->
-      <div class="flex items-center justify-between w-full">
+      <div class="flex items-center justify-between md:w-fit">
         <router-link
           to="/dashboard"
           class="flex font-semibold text-xl text-black focus:outline-hidden focus:opacity-80 justify-center items-center gap-2"
@@ -60,14 +60,14 @@ const isActive = (path: string) => route.path === path
       <!-- Collapse -->
       <div
         id="hs-header-classic"
-        class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow md:block w-full"
+        class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow w-full md:block"
         aria-labelledby="hs-header-classic-collapse"
       >
         <div
           class="overflow-hidden overflow-y-auto max-h-[75vh] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300"
         >
           <div
-            class="py-2 md:py-0 flex flex-col md:flex-row md:items-center md:justify-center gap-0.5 md:gap-1"
+            class="w-full max-w-[800px] mx-auto py-2 md:py-0 flex flex-col md:flex-row md:items-center md:justify-center gap-0.5 md:gap-1"
           >
             <!-- Nav Links -->
             <router-link
@@ -106,7 +106,7 @@ const isActive = (path: string) => route.path === path
       </div>
       <!-- End Collapse -->
       <!-- Button Group -->
-      <div class="relative flex-wrap justify-end w-full md:flex hidden">
+      <div class="relative flex-wrap justify-end md:flex hidden">
         <SignedOut>
           <SignInButton
             mode="modal"
