@@ -140,7 +140,7 @@ const handleSubmit = async () => {
                     <Speech class="size-5 text-gray-500" />
                   </div>
                 </div>
-                <!-- INPUT FOR TYPE
+                <!-- INPUT FOR TYPE -->
                 <label for="input-pronunciation" class="block text-sm font-medium">Example</label>
                 <div class="relative">
                   <select
@@ -151,7 +151,7 @@ const handleSubmit = async () => {
                     <option>2</option>
                     <option>3</option>
                   </select>
-                </div> -->
+                </div>
               </div>
             </form>
           </div>
