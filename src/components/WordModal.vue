@@ -23,7 +23,7 @@ const handleSubmit = async () => {
   }
 
   await vocabStore.addVocabulary({
-    word: formData.word || null,
+    word: formData.word,
     translate: formData.translate || null,
     example: formData.example || null,
     pronunciation: formData.pronunciation || null,
