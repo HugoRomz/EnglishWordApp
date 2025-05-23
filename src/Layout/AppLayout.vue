@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import AppTopbar from './AppTopbar.vue'
 import Announcement from '../components/AnnouncementBanner.vue'
-import WordModal from '@/components/WordModal.vue'
 import FAB from '@/components/FAB.vue'
+import VocabModal from '@/components/modals/VocabModal.vue'
+import { useVocabModalStore } from '@/stores/vocabModalStore'
+
+const vocabModal = useVocabModalStore()
 </script>
 
 <template>
@@ -14,7 +17,12 @@ import FAB from '@/components/FAB.vue'
 
     <main class="max-w-[70rem] 2xl:max-w-[85rem] w-full mx-auto px-3 py-3 lg:py-6 lg:px-0">
       <router-view />
-      <WordModal />
+      <!-- <WordModal /> -->
+      <VocabModal
+        :title="vocabModal.modalMode === 'edit' ? 'Editar palabra' : 'Agregar palabra'"
+        @close="vocabModal.closeModal"
+        @save="console.log('Guardar aún no implementado')"
+      />
       <FAB />
     </main>
   </div>
