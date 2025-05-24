@@ -13,7 +13,7 @@ export type Database = {
         Row: {
           clerk_user_id: string
           created_at: string
-          difficulty: number | null
+          difficulty: string | null
           example: string | null
           id: string
           ipa_pronunciation: string | null
@@ -26,7 +26,7 @@ export type Database = {
         Insert: {
           clerk_user_id?: string
           created_at?: string
-          difficulty?: number | null
+          difficulty?: string | null
           example?: string | null
           id?: string
           ipa_pronunciation?: string | null
@@ -39,7 +39,7 @@ export type Database = {
         Update: {
           clerk_user_id?: string
           created_at?: string
-          difficulty?: number | null
+          difficulty?: string | null
           example?: string | null
           id?: string
           ipa_pronunciation?: string | null

@@ -9,7 +9,7 @@ import { onMounted, ref } from 'vue'
 const vocabStore = useVocabulariesStore()
 const loading = ref(false)
 const noMore = ref(false)
-const LIMIT = 6
+const LIMIT = 8
 
 const { isSignedIn, user, isLoaded } = useUser()
 

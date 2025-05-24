@@ -14,20 +14,18 @@ const props = defineProps<{
 
 <template>
   <div class="max-w-[85rem] mx-auto">
-    <div v-if="props.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div v-if="props.loading" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <SkeletonCard v-for="n in props.LIMIT" :key="n" />
     </div>
 
     <div
       v-else-if="props.vocabularies.length > 0"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
     >
       <WordCard
         v-for="vocabulary in props.vocabularies"
         :key="vocabulary.id"
-        :word="vocabulary.word || ''"
-        :translate="vocabulary.translate || ''"
-        :example="vocabulary.example || ''"
+        :word="vocabulary || ''"
       />
     </div>
 
