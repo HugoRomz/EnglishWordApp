@@ -1,30 +1,23 @@
 <script setup lang="ts">
 import StatsGrid from '@/components/StatsGrid.vue'
 import WordsGrid from '@/components/WordsGrid.vue'
+import { useVocabStore } from '@/stores/vocabStore'
 import { useUser } from '@clerk/vue'
+import { computed, onMounted } from 'vue'
 
-import { useVocabulariesStore } from '@/stores/vocabularies'
-import { onMounted, ref } from 'vue'
-
-const vocabStore = useVocabulariesStore()
-const loading = ref(false)
-const noMore = ref(false)
 const LIMIT = 8
 
 const { isSignedIn, user, isLoaded } = useUser()
 
+const store = useVocabStore()
+
 onMounted(async () => {
-  try {
-    loading.value = true
-    await vocabStore.fetchVocabularies(LIMIT)
-    noMore.value = vocabStore.vocabularies.length >= vocabStore.dataStats.totalWords
-  } catch (error) {
-    console.error('Error fetching vocabularies:', error)
-    loading.value = false
-  } finally {
-    loading.value = false
-  }
+  await store.loadWords({ limit: LIMIT })
+  await store.loadStats()
 })
+
+const recentWords = computed(() => store.recentWords)
+const stats = computed(() => store.stats)
 </script>
 
 <template>
@@ -35,7 +28,8 @@ onMounted(async () => {
     Welcome, {{ user?.firstName ? user.firstName : 'Unnamed user' }}!
   </h2>
   <div v-else>Not signed in</div>
-  <StatsGrid :stats="vocabStore.dataStats" />
+
+  <StatsGrid :stats="stats ?? { total: 0, pending: 0, recent: 0, complete: 0 }" />
 
   <div class="flex items-center justify-between mt-10 mb-4">
     <h3 class="text-xl font-semibold">Recently added words</h3>
@@ -47,5 +41,5 @@ onMounted(async () => {
     </router-link>
   </div>
 
-  <WordsGrid :loading="loading" :LIMIT="LIMIT" :vocabularies="vocabStore.vocabularies" />
+  <WordsGrid :LIMIT="LIMIT" :vocabularies="recentWords" />
 </template>

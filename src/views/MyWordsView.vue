@@ -1,8 +1,23 @@
 <script setup lang="ts">
 import { Plus, Search } from 'lucide-vue-next'
 import { useVocabModalStore } from '@/stores/vocabModalStore'
+// import WordsGrid from '@/components/WordsGrid.vue'
+// import { useVocabStore } from '@/stores/vocabStore'
+// import { computed, onMounted } from 'vue'
 
 const vocabModal = useVocabModalStore()
+// const storeWords = useVocabStore()
+
+// onMounted(async () => {
+//   // Cargar con paginación
+//   await storeWords.loadWords({
+//     limit: 20,
+//     offset: 0,
+//   })
+// })
+
+// Solo palabras, NO stats
+// const words = computed(() => storeWords.words)
 </script>
 <template>
   <div
@@ -40,4 +55,5 @@ const vocabModal = useVocabModalStore()
       </button>
     </div>
   </div>
+  <!-- <WordsGrid :words="words" /> -->
 </template>

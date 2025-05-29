@@ -3,7 +3,7 @@ import { getSupabase } from '@/lib/supabaseClient'
 
 import type { Database } from '@/types/database.types'
 
-// type Vocabulary = Database['public']['Tables']['vocabularies']['Row']
+export type Word = Database['public']['Tables']['vocabularies']['Row']
 type VocabularyInsert = Database['public']['Tables']['vocabularies']['Insert']
 type VocabularyUpdate = Database['public']['Tables']['vocabularies']['Update']
 

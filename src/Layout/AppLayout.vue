@@ -17,7 +17,7 @@ const vocabModal = useVocabModalStore()
 
     <main class="max-w-[70rem] 2xl:max-w-[85rem] w-full mx-auto px-3 py-3 lg:py-6 lg:px-0">
       <router-view />
-      <!-- <WordModal /> -->
+
       <VocabModal
         :title="vocabModal.modalMode === 'edit' ? 'Editar palabra' : 'Agregar palabra'"
         @close="vocabModal.closeModal"
