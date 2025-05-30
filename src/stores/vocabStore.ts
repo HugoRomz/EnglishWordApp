@@ -13,16 +13,31 @@ export const useVocabStore = defineStore('vocabStore', () => {
   const isLoadingWords = ref(false)
   const isLoadingStats = ref(false)
 
-  // 🔍 GETTERS
+  //  PAGINACIÓN
+  const currentPage = ref(1)
+  const itemsPerPage = ref(8)
+  const totalItems = ref(0)
+
+  // GETTERS
   const totalWords = computed(() => words.value.length)
   const hasWords = computed(() => words.value.length > 0)
-  const recentWords = computed(() => words.value.slice(0, 10)) // Primeros 10 para dashboard
+  const recentWords = computed(() => words.value.slice(0, itemsPerPage.value))
+
+  const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.value))
+  const hasNextPage = computed(() => currentPage.value < totalPages.value)
+  const hasPrevPage = computed(() => currentPage.value > 1)
 
   const loadWords = async (filter: VocabularyFilter = {}) => {
     isLoadingWords.value = true
 
     try {
-      const { data, error } = await fetchList(filter)
+      const offset = (currentPage.value - 1) * itemsPerPage.value
+
+      const { data, error, count } = await fetchList({
+        ...filter,
+        limit: itemsPerPage.value,
+        offset: offset,
+      })
 
       if (error) {
         console.error('Error loading words:', error)
@@ -30,6 +45,7 @@ export const useVocabStore = defineStore('vocabStore', () => {
       }
 
       words.value = data || []
+      totalItems.value = count
 
       return { success: true, data }
     } catch (err) {
@@ -38,6 +54,33 @@ export const useVocabStore = defineStore('vocabStore', () => {
     } finally {
       isLoadingWords.value = false
     }
+  }
+
+  // 📄 FUNCIONES DE PAGINACIÓN
+  const nextPage = async (filter: VocabularyFilter = {}) => {
+    if (hasNextPage.value) {
+      currentPage.value++
+      await loadWords(filter)
+    }
+  }
+
+  const prevPage = async (filter: VocabularyFilter = {}) => {
+    if (hasPrevPage.value) {
+      currentPage.value--
+      await loadWords(filter)
+    }
+  }
+
+  const goToPage = async (page: number, filter: VocabularyFilter = {}) => {
+    if (page >= 1 && page <= totalPages.value) {
+      currentPage.value = page
+      await loadWords(filter)
+    }
+  }
+
+  const resetPagination = () => {
+    currentPage.value = 1
+    totalItems.value = 0
   }
 
   // 📈 FETCH PARA STATS (Solo Dashboard)
@@ -81,23 +124,34 @@ export const useVocabStore = defineStore('vocabStore', () => {
   }
 
   return {
-    // 📦 Estado
+    //  Estado
     words,
     stats,
     pendingWords,
 
-    // 🔄 Estados de carga
+    //  Estados de carga
     isLoadingWords,
     isLoadingStats,
 
-    // 🔍 Getters
+    //  estados Paginación
+    currentPage,
+    itemsPerPage,
+    totalItems,
+
+    //  Getters
     totalWords,
     hasWords,
     recentWords,
 
-    // 🔍 Métodos de carga (FETCHS)
+    //  Métodos de carga (FETCHS)
     loadWords,
     loadStats,
     loadPendingWords,
+
+    //  Paginación
+    nextPage,
+    prevPage,
+    goToPage,
+    resetPagination,
   }
 })

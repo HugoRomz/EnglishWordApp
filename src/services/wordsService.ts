@@ -38,7 +38,7 @@ export const vocabulariesService = {
 
     let query = supabase
       .from('vocabularies')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('clerk_user_id', userId)
       .order('created_at', { ascending: false })
 

@@ -10,14 +10,13 @@ const store = useVocabStore()
 
 const props = defineProps<{
   vocabularies: Vocabulary[]
-  LIMIT: number
 }>()
 </script>
 
 <template>
   <div class="max-w-[85rem] mx-auto">
     <div v-if="store.isLoadingWords" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <SkeletonCard v-for="n in props.LIMIT" :key="n" />
+      <SkeletonCard v-for="n in store.itemsPerPage" :key="n" />
     </div>
 
     <div

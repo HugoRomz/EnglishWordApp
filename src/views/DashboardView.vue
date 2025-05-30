@@ -5,14 +5,12 @@ import { useVocabStore } from '@/stores/vocabStore'
 import { useUser } from '@clerk/vue'
 import { computed, onMounted } from 'vue'
 
-const LIMIT = 8
-
 const { isSignedIn, user, isLoaded } = useUser()
 
 const store = useVocabStore()
 
 onMounted(async () => {
-  await store.loadWords({ limit: LIMIT })
+  await store.loadWords()
   await store.loadStats()
 })
 
@@ -41,5 +39,5 @@ const stats = computed(() => store.stats)
     </router-link>
   </div>
 
-  <WordsGrid :LIMIT="LIMIT" :vocabularies="recentWords" />
+  <WordsGrid :vocabularies="recentWords" />
 </template>
