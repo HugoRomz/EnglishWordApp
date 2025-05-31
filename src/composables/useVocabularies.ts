@@ -5,8 +5,8 @@ import { useAuth } from '@clerk/vue'
 import type { PostgrestError } from '@supabase/supabase-js'
 import type { Database } from '@/types/database.types'
 
-type VocabularyInsert = Database['public']['Tables']['vocabularies']['Insert']
-type VocabularyUpdate = Database['public']['Tables']['vocabularies']['Update']
+export type VocabularyInsert = Database['public']['Tables']['vocabularies']['Insert']
+export type VocabularyUpdate = Database['public']['Tables']['vocabularies']['Update']
 
 export const useVocabularies = () => {
   const { getToken, userId } = useAuth()

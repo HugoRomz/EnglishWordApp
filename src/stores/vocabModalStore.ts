@@ -1,3 +1,4 @@
+//STORE: vocabModalStore.ts
 import type { Database } from '@/types/database.types'
 import { defineStore } from 'pinia'
 

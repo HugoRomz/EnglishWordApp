@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useVocabModalStore } from '@/stores/vocabModalStore'
 import type { Database } from '@/types/database.types'
 import { formatDistance } from 'date-fns'
 import { BookOpen, Pencil, Speech } from 'lucide-vue-next'
 
-defineProps<{
+const vocabModal = useVocabModalStore()
+
+const props = defineProps<{
   word: Vocabulary
 }>()
 
@@ -50,6 +53,10 @@ const formatDate = (date: string | null): string => {
 
   return formattedDate
 }
+
+const handleEdit = () => {
+  vocabModal.openEdit(props.word)
+}
 </script>
 
 <template>
@@ -67,11 +74,12 @@ const formatDate = (date: string | null): string => {
             class="size-7 rounded hover:bg-neutral-100 flex items-center justify-center transition"
             ><BookOpen class="size-4 text-gray-800 hover:text-black"
           /></router-link>
-          <router-link
-            to="/my-words"
+          <button
+            @click="handleEdit"
             class="size-7 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition"
-            ><Pencil class="size-4 text-gray-800 hover:text-black"
-          /></router-link>
+          >
+            <Pencil class="size-4 text-gray-800 hover:text-black" />
+          </button>
         </div>
       </div>
       <div

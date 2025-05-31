@@ -1,3 +1,4 @@
+//vocabModal.vue
 <script setup lang="ts">
 import { X } from 'lucide-vue-next'
 
