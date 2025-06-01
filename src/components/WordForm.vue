@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { modalMode, Word } from '@/stores/vocabModalStore'
-import { AudioLines, AudioWaveform, Languages, TextCursorInput, WholeWord } from 'lucide-vue-next'
+import {
+  AudioLines,
+  AudioWaveform,
+  Languages,
+  TextCursorInput,
+  WholeWord,
+  X,
+} from 'lucide-vue-next'
 
 const props = defineProps<{
   mode: modalMode
@@ -22,7 +29,9 @@ const form = ref({
 })
 
 // Estado para bulk (cuando implementes)
-const bulkWords = ref('')
+const chips = ref<string[]>([])
+const inputValue = ref('')
+const inputRef = ref(null)
 
 // Opciones para el select de tipos
 const wordTypes = [
@@ -73,7 +82,7 @@ watch(
 
 const isValid = computed(() => {
   if (props.mode === 'bulk') {
-    return bulkWords.value.trim().length > 0
+    return chips.value.length > 0
   }
   return form.value.word.trim().length > 0
 })
@@ -82,18 +91,20 @@ const handleSave = () => {
   if (!isValid.value) return
 
   if (props.mode === 'bulk') {
-    const words = bulkWords.value
-      .split('\n')
-      .map((word) => word.trim())
-      .filter((word) => word.length > 0)
-
-    emit('save', { mode: 'bulk', data: words })
+    emit('save', { mode: 'bulk', data: chips.value })
   } else {
-    const formData = {
-      ...form.value,
+    const baseData = {
       word: form.value.word.toUpperCase(),
-      ...(props.mode === 'edit' && props.word ? { id: props.word.id } : {}),
+      translate: form.value.translate,
+      type: form.value.type,
+      example: form.value.example,
+      pronunciation: form.value.pronunciation,
+      ipa_pronunciation: form.value.ipa_pronunciation,
+      difficulty: form.value.difficulty,
     }
+
+    const formData =
+      props.mode === 'edit' && props.word ? { ...baseData, id: props.word.id } : baseData
 
     emit('save', { mode: props.mode, data: formData })
   }
@@ -103,26 +114,93 @@ const handleSave = () => {
 defineExpose({
   handleSave,
 })
+
+// Funciones para chips
+const addChip = (value: string) => {
+  const trimmedValue = value.trim().toUpperCase()
+  if (trimmedValue && !chips.value.includes(trimmedValue)) {
+    chips.value.push(trimmedValue)
+  }
+  inputValue.value = ''
+}
+
+const removeChip = (indexToRemove: number) => {
+  chips.value = chips.value.filter((_, index) => index !== indexToRemove)
+}
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault()
+    addChip(inputValue.value)
+  } else if (e.key === 'Backspace' && inputValue.value === '' && chips.value.length > 0) {
+    removeChip(chips.value.length - 1)
+  }
+}
+
+const handleInputBlur = () => {
+  if (inputValue.value.trim()) {
+    addChip(inputValue.value)
+  }
+}
 </script>
 
 <template>
   <form @submit.prevent="handleSave" class="space-y-4">
     <div v-if="mode === 'bulk'" class="w-full space-y-3">
       <div class="grid gap-4">
-        <!-- WORD -->
         <div class="grid grid-cols-1">
-          <!-- BULK -->
-          <div class="relative">
-            <input
-              v-model="bulkWords"
-              type="text"
-              class="peer py-2.5 sm:py-3 px-4 ps-11 block w-full bg-gray-100 border-transparent rounded-lg sm:text-sm focus:border-primaryColor focus:ring-primaryColor disabled:opacity-50 disabled:pointer-events-none"
-              placeholder="Enter words | (e.g. 'apple, hello, world')"
-            />
-            <div
-              class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-4 peer-disabled:opacity-50 peer-disabled:pointer-events-none"
-            >
-              <WholeWord class="shrink-0 size-5 text-gray-500" />
+          <div class="space-y-2">
+            <div class="relative">
+              <!-- Contenedor principal con chips e input -->
+              <div
+                class="min-h-[48px] py-2.5 px-4 pl-11 bg-gray-100 border-transparent rounded-lg focus-within:border-primaryColor focus-within:ring-2 focus-within:ring-primaryColor focus-within:ring-opacity-20 cursor-text"
+              >
+                <!-- Icono -->
+                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4">
+                  <WholeWord class="h-5 w-5 text-gray-500" />
+                </div>
+
+                <!-- Chips e Input -->
+                <div class="flex flex-wrap gap-2 items-center">
+                  <!-- Chips -->
+                  <span
+                    v-for="(chip, index) in chips"
+                    :key="index"
+                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200"
+                  >
+                    {{ chip }}
+                    <button
+                      type="button"
+                      @click="removeChip(index)"
+                      class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-emerald-200 focus:outline-none focus:bg-emerald-200"
+                    >
+                      <X class="w-3 h-3 text-black font-bold" />
+                    </button>
+                  </span>
+
+                  <!-- Input -->
+                  <input
+                    ref="inputRef"
+                    v-model="inputValue"
+                    type="text"
+                    @keydown="handleKeyDown"
+                    @blur="handleInputBlur"
+                    class="flex-1 min-w-[120px] bg-transparent border-none outline-none text-sm placeholder-gray-500 focus:ring-0 focus:border-transparent"
+                    :placeholder="
+                      chips.length === 0
+                        ? 'Escribe palabras y presiona Enter o coma...'
+                        : 'Agregar más...'
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-500">Presiona Enter o coma para agregar una palabra.</p>
+
+            <!-- Contador -->
+            <div v-if="chips.length > 0" class="text-sm text-gray-600">
+              {{ chips.length }} palabra{{ chips.length !== 1 ? 's' : '' }}
             </div>
           </div>
         </div>
@@ -130,12 +208,6 @@ defineExpose({
     </div>
 
     <div v-else class="w-full space-y-3">
-      <input
-        v-model="form.id"
-        type="text"
-        class="peer py-2.5 sm:py-3 px-4 ps-11 block w-full bg-gray-100 border-transparent rounded-lg sm:text-sm focus:border-primaryColor focus:ring-primaryColor disabled:opacity-50 disabled:pointer-events-none"
-        placeholder="Enter word | (e.g. 'apple')"
-      />
       <div class="grid gap-4">
         <!-- WORD -->
         <div class="grid grid-cols-1">

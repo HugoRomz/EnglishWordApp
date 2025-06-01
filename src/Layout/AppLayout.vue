@@ -1,15 +1,28 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { inject } from 'vue'
+
 import AppTopbar from './AppTopbar.vue'
 import Announcement from '../components/AnnouncementBanner.vue'
 import FAB from '@/components/FAB.vue'
 import VocabModal from '@/components/modals/VocabModal.vue'
-import { useVocabModalStore, type modalMode, type Word } from '@/stores/vocabModalStore'
 import WordForm from '@/components/WordForm.vue'
-import { ref } from 'vue'
+
+import { useVocabModalStore, type FormPayload } from '@/stores/vocabModalStore'
+import { useVocabStore } from '@/stores/vocabStore'
+import { useVocabularies } from '@/composables/useVocabularies'
 
 const vocabModal = useVocabModalStore()
+const vocabStore = useVocabStore()
+const { createVocabulary, createBulk, updateVocabulary } = useVocabularies()
 
 const formRef = ref()
+
+interface Toast {
+  open: (options: { message: string; type: 'success' | 'error' | 'warning' | 'info' }) => void
+}
+
+const toast = inject<Toast>('toast')
 
 // Cuando el modal emite save, llamamos al handleSave del formulario
 const handleModalSave = () => {
@@ -18,27 +31,41 @@ const handleModalSave = () => {
   }
 }
 
-const handleFormSave = async (payload: { mode: modalMode; data: Word }) => {
+const handleFormSave = async (payload: FormPayload) => {
+  let response = null
   try {
     if (payload.mode === 'bulk') {
-      console.log('Bulk save not implemented yet:', payload.data)
-
-      // await createBulk(payload.data)
-    } else if (payload.mode === 'edit') {
-      // await updateVocabulary(payload.data.id, payload.data)
-      console.log('Edit save not implemented yet:', payload.data)
+      response = await createBulk(payload.data)
+      toast?.open({
+        message: `${payload.data.length} palabras guardadas correctamente`,
+        type: 'success',
+      })
+    } else if (payload.mode === 'edit' && payload.data.id) {
+      response = await updateVocabulary(payload.data.id, payload.data)
+      toast?.open({
+        message: 'Palabra actualizada correctamente',
+        type: 'success',
+      })
     } else {
-      // await createVocabulary(payload.data)
-      console.log('Single save not implemented yet:', payload.data)
+      response = await createVocabulary(payload.data)
+      toast?.open({
+        message: 'Palabra agregada correctamente',
+        type: 'success',
+      })
     }
 
-    // Recargar datos
-    // await store.loadWords()
-    // Cerrar modal
+    if (response?.error) {
+      toast?.open({
+        message: response.error.message,
+        type: 'error',
+      })
+      return
+    }
+    await vocabStore.loadWords()
+
     vocabModal.closeModal()
   } catch (error) {
     console.error('Error saving:', error)
-    // Aquí puedes manejar errores
   }
 }
 </script>

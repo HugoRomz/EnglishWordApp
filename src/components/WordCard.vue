@@ -76,7 +76,7 @@ const handleEdit = () => {
           /></router-link>
           <button
             @click="handleEdit"
-            class="size-7 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition"
+            class="size-7 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition cursor-pointer"
           >
             <Pencil class="size-4 text-gray-800 hover:text-black" />
           </button>

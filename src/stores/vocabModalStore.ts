@@ -1,9 +1,16 @@
 //STORE: vocabModalStore.ts
+import type { VocabularyInsert } from '@/composables/useVocabularies'
 import type { Database } from '@/types/database.types'
 import { defineStore } from 'pinia'
 
 export type Word = Database['public']['Tables']['vocabularies']['Row']
+
 export type modalMode = 'single' | 'bulk' | 'edit'
+
+export type FormPayload =
+  | { mode: 'bulk'; data: string[] }
+  | { mode: 'edit'; data: Word }
+  | { mode: 'single'; data: Omit<VocabularyInsert, 'id' | 'created_at' | 'clerk_user_id'> }
 
 interface HSOverlayType {
   open(modalEl: HTMLElement): void
@@ -23,6 +30,7 @@ export const useVocabModalStore = defineStore('vocabModal', {
       this.modalMode = 'single'
       this.editingWord = null
       this.isModalOpen = true
+      this.words = []
       this.openDOMModal()
     },
 
@@ -30,6 +38,7 @@ export const useVocabModalStore = defineStore('vocabModal', {
       this.modalMode = 'bulk'
       this.editingWord = null
       this.isModalOpen = true
+      this.words = []
       this.openDOMModal()
     },
 
@@ -37,6 +46,7 @@ export const useVocabModalStore = defineStore('vocabModal', {
       this.modalMode = 'edit'
       this.editingWord = { ...word }
       this.isModalOpen = true
+      this.words = []
       this.openDOMModal()
     },
 
@@ -44,6 +54,7 @@ export const useVocabModalStore = defineStore('vocabModal', {
       this.isModalOpen = false
       this.modalMode = 'single'
       this.editingWord = null
+      this.words = []
       this.closeDOMModal()
     },
 

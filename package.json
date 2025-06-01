@@ -27,7 +27,8 @@
     "preline": "^3.0.1",
     "tailwindcss": "^4.1.5",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue-toast-notification": "^3.1.3"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",

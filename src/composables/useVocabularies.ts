@@ -17,7 +17,6 @@ export const useVocabularies = () => {
 
   const handleError = (err: unknown) => {
     const errorObj = err as PostgrestError
-    console.error('Vocabulary error:', errorObj)
     error.value = errorObj.message || 'Error desconocido'
     return { data: null, error: errorObj, count: 0 }
   }
