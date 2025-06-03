@@ -1,10 +1,25 @@
 <script setup lang="ts">
+import { usePreline } from '@/composables/UsePreline'
+import { useVocabularies } from '@/composables/useVocabularies'
+import { useConfirmModalStore } from '@/stores/confirmModalStore'
 import { useVocabModalStore } from '@/stores/vocabModalStore'
+import { useVocabStore } from '@/stores/vocabStore'
 import type { Database } from '@/types/database.types'
 import { formatDistance } from 'date-fns'
-import { BookOpen, Pencil, Speech } from 'lucide-vue-next'
+import { BookOpen, EllipsisVertical, Pencil, Speech } from 'lucide-vue-next'
+import { inject } from 'vue'
 
 const vocabModal = useVocabModalStore()
+
+const vocabStore = useVocabStore()
+const { deleteVocabulary } = useVocabularies()
+const confirmModal = useConfirmModalStore()
+
+interface Toast {
+  open: (options: { message: string; type: 'success' | 'error' | 'warning' | 'info' }) => void
+}
+
+const toast = inject<Toast>('toast')
 
 const props = defineProps<{
   word: Vocabulary
@@ -57,6 +72,32 @@ const formatDate = (date: string | null): string => {
 const handleEdit = () => {
   vocabModal.openEdit(props.word)
 }
+
+const handleDelete = () => {
+  confirmModal.open({
+    title: 'Confirmar eliminación',
+    message: `¿Estás seguro de que quieres eliminar la palabra "${props.word.word}"?`,
+    confirmText: 'Sí, eliminar',
+    cancelText: 'Cancelar',
+    onConfirm: async () => {
+      const { error } = await deleteVocabulary(props.word.id)
+      if (!error) {
+        toast?.open({
+          message: 'Palabra eliminada correctamente',
+          type: 'success',
+        })
+        await vocabStore.loadWords()
+      } else {
+        toast?.open({
+          message: error.message,
+          type: 'error',
+        })
+      }
+    },
+  })
+}
+
+usePreline()
 </script>
 
 <template>
@@ -69,17 +110,52 @@ const handleEdit = () => {
           <h2 class="text-xl font-bold capitalize">{{ word.word }}</h2>
         </div>
         <div class="flex gap-1">
-          <router-link
-            to="/my-words"
-            class="size-7 rounded hover:bg-neutral-100 flex items-center justify-center transition"
-            ><BookOpen class="size-4 text-gray-800 hover:text-black"
-          /></router-link>
-          <button
-            @click="handleEdit"
-            class="size-7 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition cursor-pointer"
-          >
-            <Pencil class="size-4 text-gray-800 hover:text-black" />
-          </button>
+          <div class="hs-dropdown [--placement:bottom-right] relative inline-block">
+            <button
+              :id="`hs-dropdown-${word.id}`"
+              type="button"
+              class="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-lg text-gray-700 align-middle disabled:opacity-50 disabled:pointer-events-none transition-all text-sm hover:bg-neutral-100 cursor-pointer"
+              aria-haspopup="menu"
+              aria-expanded="false"
+              aria-label="Dropdown"
+            >
+              <EllipsisVertical class="shrink-0 size-4" />
+            </button>
+
+            <div
+              class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden divide-y divide-gray-200 min-w-40 bg-white shadow-2xl rounded-lg p-2 mt-2 z-20"
+              role="menu"
+              aria-orientation="vertical"
+              :aria-labelledby="`hs-dropdown-${word.id}`"
+            >
+              <div class="py-2 first:pt-0 last:pb-0">
+                <span class="block py-2 px-3 text-xs font-medium uppercase text-gray-400">
+                  Actions
+                </span>
+
+                <button
+                  class="flex w-full items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 cursor-pointer"
+                  @click="handleEdit"
+                >
+                  <Pencil class="size-4 text-gray-800 hover:text-black" /> Edit word
+                </button>
+                <router-link
+                  to="/my-words"
+                  class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100"
+                >
+                  <BookOpen class="size-4 text-gray-800 hover:text-black" />View details
+                </router-link>
+              </div>
+              <div class="py-2 first:pt-0 last:pb-0">
+                <button
+                  class="flex w-full items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-red-600 hover:bg-gray-100 focus:ring-1 focus:ring-red-600 cursor-pointer"
+                  @click="handleDelete"
+                >
+                  Delete word
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div

@@ -7,13 +7,16 @@ import Announcement from '../components/AnnouncementBanner.vue'
 import FAB from '@/components/FAB.vue'
 import VocabModal from '@/components/modals/VocabModal.vue'
 import WordForm from '@/components/WordForm.vue'
+import ConfirmModal from '@/components/modals/ConfirmModal.vue'
 
 import { useVocabModalStore, type FormPayload } from '@/stores/vocabModalStore'
 import { useVocabStore } from '@/stores/vocabStore'
 import { useVocabularies } from '@/composables/useVocabularies'
+import { useConfirmModalStore } from '@/stores/confirmModalStore'
 
 const vocabModal = useVocabModalStore()
 const vocabStore = useVocabStore()
+const confirmModal = useConfirmModalStore()
 const { createVocabulary, createBulk, updateVocabulary } = useVocabularies()
 
 const formRef = ref()
@@ -92,6 +95,14 @@ const handleFormSave = async (payload: FormPayload) => {
           @save="handleFormSave"
         />
       </VocabModal>
+      <ConfirmModal
+        :title="confirmModal.title"
+        :message="confirmModal.message"
+        :confirm-text="confirmModal.confirmText"
+        :cancel-text="confirmModal.cancelText"
+        @close="confirmModal.close"
+        @confirm="confirmModal.confirm"
+      />
       <FAB />
     </main>
   </div>
